@@ -29,6 +29,17 @@ function ProductCard({ product }) {
         <h3 className="product-name">
           <Link to={`/san-pham/${product.id}`}>{product.name}</Link>
         </h3>
+        
+        <div className="product-price-box">
+          {product.price === 'Call' ? (
+            <span className="call-price">Liên hệ</span>
+          ) : (
+            <>
+              <span className="product-price">{product.price}</span>
+              {product.unit && <span className="product-unit"> {product.unit}</span>}
+            </>
+          )}
+        </div>
 
         <div className="product-buttons">
           <a 

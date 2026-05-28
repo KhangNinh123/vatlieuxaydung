@@ -40,7 +40,16 @@ function ProductDetailPage() {
           <div className="product-detail-info-section">
             <h1 className="product-title">{product.name}</h1>
             
-
+            <div className="product-price-section">
+              {product.price === 'Call' ? (
+                <span className="price-call">Liên hệ</span>
+              ) : (
+                <>
+                  <span className="price-value">{product.price}</span>
+                  {product.unit && <span className="price-unit">{product.unit}</span>}
+                </>
+              )}
+            </div>
 
             <div className="product-short-description">
               <p>{product.description || 'Chưa có mô tả cho sản phẩm này.'}</p>

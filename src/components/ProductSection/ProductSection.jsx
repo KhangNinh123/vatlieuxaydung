@@ -1,35 +1,90 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import ProductGrid from './ProductGrid';
 import { products } from '../../data/products';
 import './ProductSection.css';
 
 function ProductSection() {
-  const [activeTab, setActiveTab] = useState('Tất cả');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sortOption, setSortOption] = useState('Mới nhất');
 
-  // Filter products based on activeTab
-  let filteredProducts = [...products];
+  const activeTab = searchParams.get('tab') || 'Tất cả';
+  const categoryParam = searchParams.get('category') || '';
+  const searchParam = searchParams.get('search') || '';
+  const maxPriceParam = searchParams.get('maxPrice') || '';
+
+  // Helper to parse price string to number
+  const parsePrice = (priceStr) => {
+    if (!priceStr || priceStr === 'Call') return 0;
+    return parseInt(priceStr.replace(/\D/g, '')) || 0;
+  };
+
+  // Filter products based on URL parameters and activeTab
+  let filteredProducts = products.filter(product => {
+    // 1. Filter by category
+    if (categoryParam && product.category !== categoryParam) {
+      return false;
+    }
+
+    // 2. Filter by search query (case-insensitive search in name, description, and category)
+    if (searchParam) {
+      const query = searchParam.toLowerCase();
+      const nameMatch = product.name?.toLowerCase().includes(query);
+      const descMatch = product.description?.toLowerCase().includes(query);
+      const catMatch = product.category?.toLowerCase().includes(query);
+      if (!nameMatch && !descMatch && !catMatch) {
+        return false;
+      }
+    }
+
+    // 3. Filter by max price
+    if (maxPriceParam) {
+      const maxP = parseInt(maxPriceParam);
+      if (maxP && product.price !== 'Call') {
+        const prodPrice = parsePrice(product.price);
+        if (prodPrice > maxP) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  });
+
+  // Filter based on activeTab
   if (activeTab === 'Khuyến mãi') {
-    filteredProducts = products.filter(p => p.badge === 'KHUYẾN MÃI');
+    filteredProducts = filteredProducts.filter(p => p.badge === 'KHUYẾN MÃI');
   } else if (activeTab === 'Mới nhất') {
-    filteredProducts = products.filter(p => p.badge === 'MỚI');
+    filteredProducts = filteredProducts.filter(p => p.badge === 'MỚI');
   } else if (activeTab === 'Bán chạy') {
-    filteredProducts = products.filter(p => p.badge === 'HOT');
+    filteredProducts = filteredProducts.filter(p => p.badge === 'HOT');
   }
 
   // Sort products
   if (sortOption === 'Giá: Thấp đến Cao') {
     filteredProducts.sort((a, b) => {
-      const getVal = (p) => p.price === 'Call' ? 0 : parseInt(p.price.replace(/\D/g, ''));
+      const getVal = (p) => p.price === 'Call' ? 0 : parsePrice(p.price);
       return getVal(a) - getVal(b);
     });
   } else if (sortOption === 'Giá: Cao đến Thấp') {
     filteredProducts.sort((a, b) => {
-      const getVal = (p) => p.price === 'Call' ? 0 : parseInt(p.price.replace(/\D/g, ''));
+      const getVal = (p) => p.price === 'Call' ? 0 : parsePrice(p.price);
       return getVal(b) - getVal(a);
     });
+  } else if (sortOption === 'Bán chạy') {
+    filteredProducts = filteredProducts.filter(p => p.badge === 'HOT');
   }
+
+  const handleTabChange = (tabName) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (tabName === 'Tất cả') {
+      newParams.delete('tab');
+    } else {
+      newParams.set('tab', tabName);
+    }
+    setSearchParams(newParams);
+  };
 
   return (
     <section className="product-section" id="product-section">
@@ -61,7 +116,7 @@ function ProductSection() {
                 <button
                   key={tab}
                   className={`tab-btn-prod ${activeTab === tab ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => handleTabChange(tab)}
                 >
                   {tab === 'Khuyến mãi' ? (
                     <>
