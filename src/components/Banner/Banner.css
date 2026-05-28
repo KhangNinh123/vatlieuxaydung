@@ -1,0 +1,232 @@
+/* =========================================
+   BANNER COMPONENT
+   ========================================= */
+.banner-section {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+}
+
+.banner-slider {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.banner-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.banner-slide.active {
+  opacity: 1;
+  z-index: 2;
+}
+
+/* Image Zoom Effect */
+.banner-slide.active {
+  animation: zoomIn 15s ease infinite alternate;
+}
+
+@keyframes zoomIn {
+  from {
+    background-size: 100%;
+  }
+  to {
+    background-size: 110%;
+  }
+}
+
+.banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 100%);
+  z-index: 3;
+}
+
+.banner-content-wrapper {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  z-index: 4;
+}
+
+.banner-content {
+  max-width: 600px;
+  color: var(--white);
+  padding: 0 20px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+}
+
+.banner-slide.active .banner-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.banner-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.banner-subtitle {
+  font-size: 1.15rem;
+  font-weight: 400;
+  line-height: 1.6;
+  margin-bottom: 35px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.banner-btn {
+  display: inline-block;
+  padding: 15px 35px;
+  background-color: var(--secondary-color);
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+}
+
+.banner-btn:hover {
+  background-color: #fff;
+  color: var(--secondary-color);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Navigation Arrows --- */
+.banner-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.banner-nav:hover {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.banner-nav.prev {
+  left: 30px;
+}
+
+.banner-nav.next {
+  right: 30px;
+}
+
+/* --- Indicators --- */
+.banner-indicators {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 5;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.4);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.indicator:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.indicator.active {
+  background-color: transparent;
+  border-color: var(--secondary-color);
+  transform: scale(1.3);
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+@media (max-width: 992px) {
+  .banner-section {
+    height: 500px;
+  }
+  
+  .banner-title {
+    font-size: 2.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .banner-section {
+    height: 400px;
+  }
+
+  .banner-content {
+    text-align: center;
+    padding: 0 40px;
+  }
+
+  .banner-overlay {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%);
+  }
+
+  .banner-content-wrapper {
+    justify-content: center;
+  }
+
+  .banner-title {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+  }
+
+  .banner-subtitle {
+    font-size: 1rem;
+    margin-bottom: 25px;
+  }
+
+  .banner-nav {
+    display: none; /* Hide arrows on mobile for cleaner look */
+  }
+}
