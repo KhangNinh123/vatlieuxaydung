@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import './Footer.css';
 import logoImg from '../../assets/logo.png';
 
@@ -94,7 +95,7 @@ function Footer() {
       <div className="footer-bottom">
         <div className="container bottom-container">
           <p className="copyright">
-            &copy; {new Date().getFullYear()} <strong>Hưng Long Vĩnh Long</strong>. Tất cả quyền được bảo lưu.
+            &copy; {new Date().getFullYear()} <strong>Hưng Long Vĩnh Long</strong>. Tất cả quyền được bảo lưu. | <Link to="/admin" style={{ color: '#94a3b8', textDecoration: 'none', marginLeft: '8px' }}><i className="fas fa-user-gear" style={{ marginRight: '4px' }}></i>Quản lý</Link>
           </p>
           <div className="payment-methods">
             <i className="fab fa-cc-visa"></i>

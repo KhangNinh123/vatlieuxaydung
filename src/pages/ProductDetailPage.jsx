@@ -1,12 +1,27 @@
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { products } from '../data/products';
+import { getProducts } from '../data/db';
 import './ProductDetailPage.css';
 
 function ProductDetailPage() {
   const { id } = useParams();
-  
-  // Find product by id. Note that id from useParams is a string.
-  const product = products.find(p => p.id === parseInt(id));
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const productsList = getProducts();
+    const foundProduct = productsList.find(p => p.id === parseInt(id));
+    setProduct(foundProduct || null);
+    setLoading(false);
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="container product-not-found">
+        <h2>Đang tải sản phẩm...</h2>
+      </div>
+    );
+  }
 
   if (!product) {
     return (

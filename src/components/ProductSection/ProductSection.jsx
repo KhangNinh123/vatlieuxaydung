@@ -1,13 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import ProductGrid from './ProductGrid';
-import { products } from '../../data/products';
+import { getProducts } from '../../data/db';
 import './ProductSection.css';
 
 function ProductSection() {
+  const [products, setProducts] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortOption, setSortOption] = useState('Mới nhất');
+
+  useEffect(() => {
+    setProducts(getProducts());
+    
+    const handleUpdate = () => {
+      setProducts(getProducts());
+    };
+    window.addEventListener('hl_products_updated', handleUpdate);
+    return () => window.removeEventListener('hl_products_updated', handleUpdate);
+  }, []);
 
   const activeTab = searchParams.get('tab') || 'Tất cả';
   const categoryParam = searchParams.get('category') || '';

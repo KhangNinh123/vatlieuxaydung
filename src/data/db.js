@@ -1,8 +1,6 @@
-import { useState, useEffect } from 'react'
-import { getNewsArticles } from '../data/db'
-import './NewsPage.css'
+import { products as defaultProducts } from './products';
 
-const newsArticles = [
+const defaultNewsArticles = [
   {
     id: 1,
     title: 'Xu hướng gạch ốp lát năm 2026: Sang trọng và gần gũi thiên nhiên',
@@ -16,7 +14,7 @@ Dưới đây là 3 xu hướng nổi bật được các kiến trúc sư đán
 
 1. Gạch Khổ Lớn (Big Slab): Các kích thước như 80x160cm, 120x240cm ngày càng phổ biến. Với ít đường ron nối hơn, gạch khổ lớn tạo ra một bề mặt liền mạch, mở rộng tối đa không gian và toát lên vẻ sang trọng quyền quý.
 
-2. Vân Đá Marble Tự Nhiên & Tone Màu Ấm: Thay vì các gam màu lạnh của các năm trước, năm nay các tông màu ấm áp như beige, nâu đất kết hợp với các đường vân marble sâu thẳm, tinh tế đang cực kỳ được ưa chuộng.
+2. Vân Đá Marble Tự Nhiên & Tone Màu Ấm: Thay vì các gam màu lạnh của các năm trước, năm nay các tông màu ấm áp như beige, nâu đất kết hợp với các đường vân marble sâu thẩm, tinh tế đang cực kỳ được ưa chuộng.
 
 3. Bề Mặt Nhám (Matt) Và Vân Nổi Sần: Mang đến cảm giác chân thực như đá tự nhiên hoặc gỗ tự nhiên dưới lòng bàn chân, đồng thời chống trơn trượt vô cùng hiệu quả, phù hợp cho cả gia đình có người già và trẻ nhỏ.`
   },
@@ -72,141 +70,103 @@ Showroom mới được thiết kế theo phong cách hiện đại với nhiề
 - Tặng ngay quà tặng giá trị cho đơn hàng thiết bị vệ sinh trọn gói.
 - Miễn phí vận chuyển tận nơi trong khu vực nội thành.`
   }
-]
+];
 
-function NewsPage() {
-  const [articles, setArticles] = useState([])
-  const [selectedArticle, setSelectedArticle] = useState(null)
-  const [activeCategory, setActiveCategory] = useState('Tất cả')
-
-  useEffect(() => {
-    setArticles(getNewsArticles());
-    
-    const handleUpdate = () => {
-      setArticles(getNewsArticles());
-    };
-    window.addEventListener('hl_news_updated', handleUpdate);
-    return () => window.removeEventListener('hl_news_updated', handleUpdate);
-  }, []);
-
-  const categories = ['Tất cả', 'Xu hướng', 'Cẩm nang', 'Tin công ty']
-
-  const filteredArticles = activeCategory === 'Tất cả' 
-    ? articles 
-    : articles.filter(art => art.category === activeCategory)
-
-  const handleOpenArticle = (article) => {
-    setSelectedArticle(article)
-    document.body.style.overflow = 'hidden' // prevent body scrolling
+const defaultInquiries = [
+  {
+    id: 1,
+    name: 'Nguyễn Văn Hải',
+    phone: '0905123456',
+    email: 'vanhai.nguyen@gmail.com',
+    message: 'Tôi muốn xin báo giá chi tiết và chiết khấu cho mẫu gạch thảm HL12 kích thước 160x240cm nhập khẩu Tây Ban Nha. Dự án nhà ở tại Vĩnh Long.',
+    date: '2026-05-30T10:30:00Z',
+    status: 'Pending' // Pending, Contacted, Completed
+  },
+  {
+    id: 2,
+    name: 'Trần Thị Thu Thảo',
+    phone: '0918765432',
+    email: 'thuthao.t@gmail.com',
+    message: 'Tư vấn giúp tôi mẫu bồn cầu thông minh HL-Smart 99. Có hỗ trợ lắp đặt trọn gói tại thành phố Vĩnh Long không?',
+    date: '2026-05-29T15:45:00Z',
+    status: 'Contacted'
+  },
+  {
+    id: 3,
+    name: 'Lê Hoàng Nam',
+    phone: '0935999888',
+    email: 'namle.arch@gmail.com',
+    message: 'Tôi bên đơn vị thiết kế, cần tìm nguồn hàng gạch giả cổ Terracotta và gạch Terrazzo hạt đá màu số lượng lớn cho quán cafe sân vườn.',
+    date: '2026-05-28T09:15:00Z',
+    status: 'Completed'
   }
+];
 
-  const handleCloseArticle = () => {
-    setSelectedArticle(null)
-    document.body.style.overflow = 'auto' // restore scrolling
+// Helper to initialize local storage
+const initStorage = () => {
+  if (!localStorage.getItem('hl_products')) {
+    localStorage.setItem('hl_products', JSON.stringify(defaultProducts));
   }
+  if (!localStorage.getItem('hl_news')) {
+    localStorage.setItem('hl_news', JSON.stringify(defaultNewsArticles));
+  }
+  if (!localStorage.getItem('hl_inquiries')) {
+    localStorage.setItem('hl_inquiries', JSON.stringify(defaultInquiries));
+  }
+};
 
-  return (
-    <div className="news-page">
-      {/* Hero Banner Section */}
-      <section className="news-hero">
-        <div className="container hero-container">
-          <h1 className="hero-title animate-fade-in">Tin Tức & Cẩm Nang</h1>
-          <p className="hero-subtitle animate-slide-up">Cập nhật xu hướng thiết kế nội thất và kinh nghiệm chọn vật liệu xây dựng tốt nhất</p>
-        </div>
-      </section>
+initStorage();
 
-      {/* Filter Category */}
-      <section className="news-filter-section">
-        <div className="container">
-          <div className="categories-tab">
-            {categories.map((cat, idx) => (
-              <button 
-                key={idx} 
-                className={`category-tab-btn ${activeCategory === cat ? 'active' : ''}`}
-                onClick={() => setActiveCategory(cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+export const getProducts = () => {
+  initStorage();
+  return JSON.parse(localStorage.getItem('hl_products'));
+};
 
-      {/* Articles Grid */}
-      <section className="news-grid-section">
-        <div className="container">
-          <div className="news-grid">
-            {filteredArticles.map(article => (
-              <article key={article.id} className="news-card">
-                <div className="news-image-box">
-                  <span className={`news-category-badge ${article.category.toLowerCase().replace(/\s+/g, '-')}`}>
-                    {article.category}
-                  </span>
-                  <img src={article.image} alt={article.title} />
-                </div>
-                <div className="news-body">
-                  <span className="news-date">
-                    <i className="far fa-calendar-alt"></i> {article.date}
-                  </span>
-                  <h3 className="news-card-title">{article.title}</h3>
-                  <p className="news-card-summary">{article.summary}</p>
-                  <button 
-                    onClick={() => handleOpenArticle(article)} 
-                    className="btn-readmore"
-                  >
-                    Đọc tiếp <i className="fas fa-arrow-right"></i>
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+export const saveProducts = (products) => {
+  localStorage.setItem('hl_products', JSON.stringify(products));
+  // Dispatch an event for multi-tab sync or component re-renders
+  window.dispatchEvent(new Event('hl_products_updated'));
+};
 
-      {/* Article Detail Modal */}
-      {selectedArticle && (
-        <div className="modal-backdrop" onClick={handleCloseArticle}>
-          <div className="modal-content-wrapper" onClick={(e) => e.stopPropagation()}>
-            <button className="btn-modal-close" onClick={handleCloseArticle}>
-              <i className="fas fa-times"></i>
-            </button>
-            <div className="modal-header-img">
-              <img src={selectedArticle.image} alt={selectedArticle.title} />
-              <div className="modal-header-overlay">
-                <span className="modal-badge">{selectedArticle.category}</span>
-                <h2>{selectedArticle.title}</h2>
-              </div>
-            </div>
-            <div className="modal-body-content">
-              <div className="modal-meta-info">
-                <span><i className="far fa-calendar-alt"></i> Ngày đăng: {selectedArticle.date}</span>
-                <span><i className="far fa-user"></i> Đăng bởi: Ban biên tập Hưng Long</span>
-              </div>
-              <div className="modal-text-content">
-                {selectedArticle.content.split('\n\n').map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
-              </div>
-              
-              {/* CTA Inside Modal */}
-              <div className="modal-cta-box">
-                <h4>Quý khách cần tư vấn hoặc báo giá nhanh?</h4>
-                <p>Vui lòng liên hệ với chúng tôi để nhận sự hỗ trợ tận tình nhất từ chuyên viên.</p>
-                <div className="modal-cta-buttons">
-                  <a href="tel:0796999353" className="modal-btn-phone">
-                    <i className="fas fa-phone-alt"></i> Gọi điện: 0796 999 353
-                  </a>
-                  <a href="https://zalo.me/0796999353" target="_blank" rel="noopener noreferrer" className="modal-btn-zalo">
-                    <i className="fas fa-comment"></i> Chat Zalo
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
+export const getNewsArticles = () => {
+  initStorage();
+  return JSON.parse(localStorage.getItem('hl_news'));
+};
 
-export default NewsPage
+export const saveNewsArticles = (articles) => {
+  localStorage.setItem('hl_news', JSON.stringify(articles));
+  window.dispatchEvent(new Event('hl_news_updated'));
+};
+
+export const getInquiries = () => {
+  initStorage();
+  return JSON.parse(localStorage.getItem('hl_inquiries'));
+};
+
+export const saveInquiries = (inquiries) => {
+  localStorage.setItem('hl_inquiries', JSON.stringify(inquiries));
+  window.dispatchEvent(new Event('hl_inquiries_updated'));
+};
+
+export const addInquiry = (inquiry) => {
+  initStorage();
+  const inquiries = getInquiries();
+  const newInquiry = {
+    id: inquiries.length > 0 ? Math.max(...inquiries.map(i => i.id)) + 1 : 1,
+    date: new Date().toISOString(),
+    status: 'Pending',
+    ...inquiry
+  };
+  inquiries.unshift(newInquiry); // Add to the top
+  saveInquiries(inquiries);
+  return newInquiry;
+};
+
+export const resetDB = () => {
+  localStorage.setItem('hl_products', JSON.stringify(defaultProducts));
+  localStorage.setItem('hl_news', JSON.stringify(defaultNewsArticles));
+  localStorage.setItem('hl_inquiries', JSON.stringify(defaultInquiries));
+  window.dispatchEvent(new Event('hl_products_updated'));
+  window.dispatchEvent(new Event('hl_news_updated'));
+  window.dispatchEvent(new Event('hl_inquiries_updated'));
+};
